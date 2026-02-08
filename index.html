@@ -4,107 +4,24 @@
 <meta charset="UTF-8">
 <title>치킨 런</title>
 <style>
-   <script>
-function createSakura() {
-    const petal = document.createElement("div");
-    petal.classList.add("sakura");
-    petal.style.left = Math.random() * window.innerWidth + "px";
-    petal.style.animationDuration = (4 + Math.random() * 4) + "s";
-    document.body.appendChild(petal);
-
-    setTimeout(() => petal.remove(), 8000);
-}
-
-setInterval(createSakura, 300);
-</script>
-    <audio id="bgm" autoplay loop>
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f4a3f2e3b.mp3?filename=sakura-lofi-ambient-110253.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-    // Empêche certains navigateurs de bloquer l'audio
-    document.addEventListener("click", () => {
-        const bgm = document.getElementById("bgm");
-        if (bgm.paused) bgm.play();
-    });
-</script>
-
- body {
+    body {
         margin: 0;
         overflow: hidden;
         background-image: url('https://images4.alphacoders.com/133/thumb-1920-1332281.jpeg');
-        background-size: 1920x1080px;
+        background-size: cover;
         font-family: sans-serif;
-        #message {
-    position: absolute;
-    top: 35%;
-    width: 100%;
-    text-align: center;
-    font-size: 36px;
-    color: #ffb7d5;
-    display: none;
-    font-weight: bold;
-    text-shadow: 0 0 10px #ff4da6, 0 0 20px #ff4da6;
-    animation: fadeIn 1.5s ease-out forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-/* pétales de sakura */
-.sakura {
-    position: fixed;
-    top: -10px;
-    width: 15px;
-    height: 15px;
-    background: pink;
-    opacity: 0.8;
-    border-radius: 50%;
-    animation: fall 6s linear infinite;
-}
-
-@keyframes fall {
-    0% { transform: translateY(0) rotate(0deg); }
-    100% { transform: translateY(120vh) rotate(360deg); }
-}
-
     }
 
-    /* 🐶 비숑 야쿠자 캐릭터 */
+    /* 🐶 비숑 야쿠자 캐릭터 (이미지) */
     #player {
         position: absolute;
         bottom: 20px;
         left: 50px;
-        width: 70px;
-        height: 70px;
-      background-image: url('https://png.pngtree.com/png-vector/20260110/ourlarge/pngtree-white-bichon-frise-running-happily-in-park-with-laughing-asian-family-png-image_18437652.webp'); 
-      background-size: cover; 
-      background-position: center; 
-    }
-
-    /* 선글라스 */
-    #player::before {
-        content: "";
-        position: absolute;
-        top: 22px;
-        left: 8px;
-        width: 45px;
-        height: 15px;
-        border-radius: 5px;
-    }
-
-    /* 꼬리 */
-    #player::after {
-        content: "";
-        position: absolute;
-        right: -12px;
-        bottom: 15px;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        
+        width: 90px;
+        height: 90px;
+        background-image: url('https://png.pngtree.com/png-vector/20260110/ourlarge/pngtree-white-bichon-frise-running-happily-in-park-with-laughing-asian-family-png-image_18437652.webp');
+        background-size: cover;
+        background-position: center;
     }
 
     /* 아이템 */
@@ -118,21 +35,45 @@ setInterval(createSakura, 300);
         top: 20px;
         left: 20px;
         font-size: 26px;
-        color: #ff4da6;
+        color: #ffb7d5;
         font-weight: bold;
-        text-shadow: 0 0 5px white;
+        text-shadow: 0 0 5px black;
     }
 
+    /* 메시지 스타일 + 글로우 */
     #message {
         position: absolute;
         top: 35%;
         width: 100%;
         text-align: center;
-        font-size: 32px;
-        color: #d1006c;
+        font-size: 36px;
+        color: #ffb7d5;
         display: none;
         font-weight: bold;
-        text-shadow: 0 0 10px white;
+        text-shadow: 0 0 10px #ff4da6, 0 0 20px #ff4da6;
+        animation: fadeIn 1.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* 🌸 떨어지는 벚꽃 */
+    .sakura {
+        position: fixed;
+        top: -10px;
+        width: 15px;
+        height: 15px;
+        background: pink;
+        opacity: 0.8;
+        border-radius: 50%;
+        animation: fall 6s linear infinite;
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(0) rotate(0deg); }
+        100% { transform: translateY(120vh) rotate(360deg); }
     }
 </style>
 </head>
@@ -140,10 +81,24 @@ setInterval(createSakura, 300);
 
 <div id="player"></div>
 <div id="score">점수 : 0</div>
-<div id="message">축하해! 너는 이겼어!<br><br>이제 진짜 서프라이즈를 보러 가자!!</div>
 
+<div id="message">
+    축하해! 너는 이겼어!<br><br>
+    이제 진짜 서프라이즈를 보러 가자!!
+</div>
+
+<!-- 🎵 음악 -->
+<audio id="bgm" autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f4a3f2e3b.mp3?filename=sakura-lofi-ambient-110253.mp3" type="audio/mpeg">
+</audio>
 
 <script>
+    // 음악 자동 재생 방지 우회
+    document.addEventListener("click", () => {
+        const bgm = document.getElementById("bgm");
+        if (bgm.paused) bgm.play();
+    });
+
     const player = document.getElementById("player");
     const scoreDisplay = document.getElementById("score");
     const message = document.getElementById("message");
@@ -187,7 +142,6 @@ setInterval(createSakura, 300);
         let type = Math.random() < 0.7 ? "chicken" : "carrot";
         item.textContent = type === "chicken" ? "🍗" : "🥕";
 
-        // 높이 랜덤 (바닥, 중간, 위)
         const heights = [20, 80, 140];
         item.style.bottom = heights[Math.floor(Math.random() * heights.length)] + "px";
 
@@ -244,10 +198,20 @@ setInterval(createSakura, 300);
             window.location.href = "page_messages.html";
         }, 3000);
     }
+
+    // 🌸 벚꽃 생성
+    function createSakura() {
+        const petal = document.createElement("div");
+        petal.classList.add("sakura");
+        petal.style.left = Math.random() * window.innerWidth + "px";
+        petal.style.animationDuration = (4 + Math.random() * 4) + "s";
+        document.body.appendChild(petal);
+
+        setTimeout(() => petal.remove(), 8000);
+    }
+
+    setInterval(createSakura, 300);
 </script>
 
 </body>
 </html>
-
-
-
