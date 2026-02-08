@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>치킨 런</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background-image: url('https://images.unsplash.com/photo-1554797589-7241bb691973?auto=format&fit=crop&w=1280&q=80');
+        background-size: cover;
+        background-position: center;
+        font-family: sans-serif;
+    }
+
+    /* 🐶 비숑 야쿠자 캐릭터 */
+    #player {
+        position: absolute;
+        bottom: 20px;
+        left: 50px;
+        width: 60px;
+        height: 60px;
+        background: white;
+        border-radius: 50%;
+        border: 3px solid black;
+        box-shadow:
+            0 0 0 6px black inset, /* 털 라인 */
+            -10px 0 0 0 black inset; /* 귀 */
+    }
+
+    /* 선글라스 */
+    #player::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 8px;
+        width: 45px;
+        height: 15px;
+        background: black;
+        border-radius: 5px;
+    }
+
+    /* 꼬리 */
+    #player::after {
+        content: "";
+        position: absolute;
+        right: -10px;
+        bottom: 10px;
+        width: 15px;
+        height: 15px;
+        background: white;
+        border-radius: 50%;
+        border: 2px solid black;
+    }
+
+    /* 아이템 */
+    .item {
+        position: absolute;
+        font-size: 40px;
+    }
+
+    #score {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 26px;
+        color: #ff4da6;
+        font-weight: bold;
+        text-shadow: 0 0 5px white;
+    }
+
+    #message {
+        position: absolute;
+        top: 35%;
+        width: 100%;
+        text-align: center;
+        font-size: 32px;
+        color: #d1006c;
+        display: none;
+        font-weight: bold;
+        text-shadow: 0 0 10px white;
+    }
+</style>
+</head>
+<body>
+
+<div id="player"></div>
+<div id="score">점수 : 0</div>
+<div id="message">축하해! 너는 정말 최고야!<br><br>잠시 후 이동합니다…</div>
+
+<script>
+    const player = document.getElementById("player");
+    const scoreDisplay = document.getElementById("score");
+    const message = document.getElementById("message");
+
+    let score = 0;
+    let jumping = false;
+    let gameOver = false;
+
+    // 점프
+    document.addEventListener("keydown", () => {
+        if (!jumping) jump();
+    });
+
+    function jump() {
+        jumping = true;
+        let height = 0;
+        let up = setInterval(() => {
+            if (height >= 140) {
+                clearInterval(up);
+                let down = setInterval(() => {
+                    if (height <= 0) {
+                        clearInterval(down);
+                        jumping = false;
+                    }
+                    height -= 5;
+                    player.style.bottom = 20 + height + "px";
+                }, 20);
+            }
+            height += 5;
+            player.style.bottom = 20 + height + "px";
+        }, 20);
+    }
+
+    // 아이템 생성 (여러 높이)
+    function spawnItem() {
+        if (gameOver) return;
+
+        const item = document.createElement("div");
+        item.classList.add("item");
+
+        let type = Math.random() < 0.7 ? "chicken" : "carrot";
+        item.textContent = type === "chicken" ? "🍗" : "🥕";
+
+        // 높이 랜덤 (바닥, 중간, 위)
+        const heights = [20, 80, 140];
+        item.style.bottom = heights[Math.floor(Math.random() * heights.length)] + "px";
+
+        item.style.left = window.innerWidth + "px";
+        document.body.appendChild(item);
+
+        let move = setInterval(() => {
+            let left = parseInt(item.style.left);
+            item.style.left = left - 7 + "px";
+
+            const playerRect = player.getBoundingClientRect();
+            const itemRect = item.getBoundingClientRect();
+
+            // 충돌
+            if (
+                itemRect.left < playerRect.right &&
+                itemRect.right > playerRect.left &&
+                itemRect.bottom > playerRect.top &&
+                itemRect.top < playerRect.bottom
+            ) {
+                if (type === "carrot") {
+                    endGame();
+                } else {
+                    score++;
+                    scoreDisplay.textContent = "점수 : " + score;
+                    if (score >= 30) winGame();
+                }
+                item.remove();
+                clearInterval(move);
+            }
+
+            if (left < -50) {
+                item.remove();
+                clearInterval(move);
+            }
+        }, 20);
+
+        setTimeout(spawnItem, 700 + Math.random() * 600);
+    }
+
+    spawnItem();
+
+    function endGame() {
+        gameOver = true;
+        message.innerHTML = "🥕 게임 오버!<br>다시 도전해봐!";
+        message.style.display = "block";
+    }
+
+    function winGame() {
+        gameOver = true;
+        message.style.display = "block";
+
+        setTimeout(() => {
+            window.location.href = "page_messages.html";
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
