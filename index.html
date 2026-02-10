@@ -3,12 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <title>치킨 런</title>
+
+<!-- 📱 Empêche zoom, scroll, resize mobile -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <style>
-    body {
+    html, body {
         margin: 0;
-        overflow: hidden;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;        /* empêche le scroll */
+        touch-action: none;      /* empêche les gestes tactiles */
+    }
+
+    body {
         background-image: url('https://images4.alphacoders.com/133/thumb-1920-1332281.jpeg');
         background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         font-family: sans-serif;
     }
 
@@ -17,14 +29,13 @@
         position: absolute;
         bottom: 20px;
         left: 50px;
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         background-image: url('https://png.pngtree.com/png-vector/20260110/ourlarge/pngtree-white-bichon-frise-running-happily-in-park-with-laughing-asian-family-png-image_18437652.webp');
         background-size: cover;
         background-position: center;
     }
 
-    /* 아이템 */
     .item {
         position: absolute;
         font-size: 40px;
@@ -40,7 +51,6 @@
         text-shadow: 0 0 5px black;
     }
 
-    /* 메시지 스타일 + 글로우 */
     #message {
         position: absolute;
         top: 35%;
@@ -59,7 +69,6 @@
         to { opacity: 1; transform: scale(1); }
     }
 
-    /* 🌸 떨어지는 벚꽃 */
     .sakura {
         position: fixed;
         top: -10px;
@@ -95,6 +104,19 @@
         transform: scale(1.1);
         background: #ff8cbc;
     }
+
+    /* 📱 Message d'aide mobile */
+    #tapHelp {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.4);
+        padding: 10px 15px;
+        border-radius: 10px;
+        color: white;
+        font-size: 18px;
+        display: none;
+    }
 </style>
 </head>
 <body>
@@ -106,6 +128,8 @@
     축하해! 너는 이겼어!<br><br>
     이제 진짜 서프라이즈를 보러 가자!!
 </div>
+
+<div id="tapHelp">📱 화면을 터치해서 점프!</div>
 
 <!-- 🎵 Musique d'ambiance -->
 <audio id="bgm" autoplay loop>
@@ -121,9 +145,8 @@
 
         let v = 0;
         const fade = setInterval(() => {
-            if (v >= 0.35) {
-                clearInterval(fade);
-            } else {
+            if (v >= 0.35) clearInterval(fade);
+            else {
                 v += 0.02;
                 bgm.volume = v;
             }
@@ -133,14 +156,34 @@
     const player = document.getElementById("player");
     const scoreDisplay = document.getElementById("score");
     const message = document.getElementById("message");
+    const tapHelp = document.getElementById("tapHelp");
 
     let score = 0;
     let jumping = false;
     let gameOver = false;
 
+    /* 🖥️ Saut clavier */
     document.addEventListener("keydown", () => {
         if (!jumping) jump();
     });
+
+    /* 📱 Saut tactile */
+    document.addEventListener("touchstart", (e) => {
+        e.preventDefault();  // empêche scroll/zoom
+        tapHelp.style.display = "none";
+        if (!jumping) jump();
+    }, { passive: false });
+
+    /* 🖱️ Saut clic */
+    document.addEventListener("mousedown", () => {
+        tapHelp.style.display = "none";
+        if (!jumping) jump();
+    });
+
+    /* 📱 Affiche l'aide mobile */
+    setTimeout(() => {
+        tapHelp.style.display = "block";
+    }, 1500);
 
     function jump() {
         jumping = true;
@@ -218,7 +261,6 @@
         message.style.display = "block";
     }
 
-    /* 🎁 Nouvelle version avec bouton */
     function winGame() {
         gameOver = true;
         message.innerHTML = `
@@ -251,4 +293,3 @@
 
 </body>
 </html>
-
