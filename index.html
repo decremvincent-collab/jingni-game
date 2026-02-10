@@ -87,16 +87,28 @@
     이제 진짜 서프라이즈를 보러 가자!!
 </div>
 
-<!-- 🎵 음악 -->
+<!-- 🎵 Musique d'ambiance -->
 <audio id="bgm" autoplay loop>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f4a3f2e3b.mp3?filename=sakura-lofi-ambient-110253.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-    // 음악 자동 재생 방지 우회
+    const bgm = document.getElementById("bgm");
+    bgm.volume = 0; // volume initial pour fade-in
+
+    // Débloque l'autoplay + fade-in progressif
     document.addEventListener("click", () => {
-        const bgm = document.getElementById("bgm");
         if (bgm.paused) bgm.play();
+
+        let v = 0;
+        const fade = setInterval(() => {
+            if (v >= 0.35) {
+                clearInterval(fade);
+            } else {
+                v += 0.02;
+                bgm.volume = v;
+            }
+        }, 150);
     });
 
     const player = document.getElementById("player");
@@ -215,5 +227,3 @@
 
 </body>
 </html>
-
-
