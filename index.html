@@ -17,8 +17,8 @@
         position: absolute;
         bottom: 20px;
         left: 50px;
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         background-image: url('https://png.pngtree.com/png-vector/20260110/ourlarge/pngtree-white-bichon-frise-running-happily-in-park-with-laughing-asian-family-png-image_18437652.webp');
         background-size: cover;
         background-position: center;
@@ -75,6 +75,26 @@
         0% { transform: translateY(0) rotate(0deg); }
         100% { transform: translateY(120vh) rotate(360deg); }
     }
+
+    /* 🎁 Bouton surprise */
+    #surpriseBtn {
+        padding: 12px 25px;
+        font-size: 22px;
+        background: #ffb7d5;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 0 5px #ff4da6;
+        box-shadow: 0 0 10px #ff4da6;
+        transition: 0.2s;
+    }
+
+    #surpriseBtn:hover {
+        transform: scale(1.1);
+        background: #ff8cbc;
+    }
 </style>
 </head>
 <body>
@@ -94,9 +114,8 @@
 
 <script>
     const bgm = document.getElementById("bgm");
-    bgm.volume = 0; // volume initial pour fade-in
+    bgm.volume = 0;
 
-    // Débloque l'autoplay + fade-in progressif
     document.addEventListener("click", () => {
         if (bgm.paused) bgm.play();
 
@@ -119,7 +138,6 @@
     let jumping = false;
     let gameOver = false;
 
-    // 점프
     document.addEventListener("keydown", () => {
         if (!jumping) jump();
     });
@@ -144,7 +162,6 @@
         }, 20);
     }
 
-    // 아이템 생성 (여러 높이)
     function spawnItem() {
         if (gameOver) return;
 
@@ -167,7 +184,6 @@
             const playerRect = player.getBoundingClientRect();
             const itemRect = item.getBoundingClientRect();
 
-            // 충돌
             if (
                 itemRect.left < playerRect.right &&
                 itemRect.right > playerRect.left &&
@@ -202,16 +218,24 @@
         message.style.display = "block";
     }
 
+    /* 🎁 Nouvelle version avec bouton */
     function winGame() {
         gameOver = true;
+        message.innerHTML = `
+            축하해! 너는 이겼어!<br><br>
+            이제 진짜 서프라이즈를 보러 가자!!<br><br>
+            <button id="surpriseBtn">🎁 서프라이즈 보기</button>
+        `;
         message.style.display = "block";
 
         setTimeout(() => {
-            window.location.href = "page_messages.html";
-        }, 3000);
+            const btn = document.getElementById("surpriseBtn");
+            btn.addEventListener("click", () => {
+                window.location.href = "page_messages.html";
+            });
+        }, 100);
     }
 
-    // 🌸 벚꽃 생성
     function createSakura() {
         const petal = document.createElement("div");
         petal.classList.add("sakura");
@@ -227,4 +251,3 @@
 
 </body>
 </html>
-
