@@ -3,52 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <title>치킨 런</title>
+
+<!-- 📱 Empêche zoom, scroll, resize mobile -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <style>
-    body {
+    html, body {
         margin: 0;
-        overflow: hidden;
-        background-image: url('https://images4.alphacoders.com/133/thumb-1920-1332281.jpeg');
-        background-size: 1920x1080px;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;        /* empêche le scroll */
+        touch-action: none;      /* empêche les gestes tactiles */
+    }
+
+    body {
+        background-image: url('https://preview.redd.it/idol-star-gojo-satoru-v0-ir8mjw5996tb1.gif?width=640&crop=smart&auto=webp&s=3f60c4ffc5f2358c8b019ef6306475f229be86e8');
+        background-size: cover;
         background-position: center;
+        background-repeat: no-repeat;
         font-family: sans-serif;
     }
 
-    /* 🐶 비숑 야쿠자 캐릭터 */
+    /* 🐶 비숑 야쿠자 캐릭터 (이미지) */
     #player {
         position: absolute;
         bottom: 20px;
         left: 50px;
-        width: 70px;
-        height: 70px;
-      background-image: url('https://png.pngtree.com/png-vector/20260110/ourlarge/pngtree-white-bichon-frise-running-happily-in-park-with-laughing-asian-family-png-image_18437652.webp'); 
-      background-size: cover; 
-      background-position: center; 
+        width: 100px;
+        height: 100px;
+        background-image: url('https://scontent.xx.fbcdn.net/v/t1.15752-9/627764165_1645091116931275_235186095692944776_n.png?_nc_cat=108&ccb=1-7&_nc_sid=9f807c&_nc_ohc=iThv7aZGQXsQ7kNvwFFXx6M&_nc_oc=AdkBiwgmNEyrHwQ4EZxB5M3bhN4bt4Ed5ov9JgCRVfCojSw26KGcbPUXCSjvnC5BfpMzf9mcAaJWShurdNe4Juc8&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.xx&oh=03_Q7cD4gEQMLVguddvtyfZ9xISj5zV-T-cH06IUWO1aIiRkp3lgw&oe=69B7EC9A');
+        background-size: cover;
+        background-position: center;
     }
 
-    /* 선글라스 */
-    #player::before {
-        content: "";
-        position: absolute;
-        top: 22px;
-        left: 8px;
-        width: 45px;
-        height: 15px;
-        border-radius: 5px;
-    }
-
-    /* 꼬리 */
-    #player::after {
-        content: "";
-        position: absolute;
-        right: -12px;
-        bottom: 15px;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        
-    }
-
-    /* 아이템 */
     .item {
         position: absolute;
         font-size: 40px;
@@ -58,10 +45,10 @@
         position: absolute;
         top: 20px;
         left: 20px;
-        font-size: 26px;
-        color: #ff4da6;
+        font-size: 25px;
+        color: #ffb7d5;
         font-weight: bold;
-        text-shadow: 0 0 5px white;
+        text-shadow: 0 0 5px black;
     }
 
     #message {
@@ -69,11 +56,66 @@
         top: 35%;
         width: 100%;
         text-align: center;
-        font-size: 32px;
-        color: #d1006c;
+        font-size: 36px;
+        color: #ffb7d5;
         display: none;
         font-weight: bold;
-        text-shadow: 0 0 10px white;
+        text-shadow: 0 0 10px #ff4da6, 0 0 20px #ff4da6;
+        animation: fadeIn 1.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .sakura {
+        position: fixed;
+        top: -10px;
+        width: 15px;
+        height: 15px;
+        background: pink;
+        opacity: 0.8;
+        border-radius: 50%;
+        animation: fall 6s linear infinite;
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(0) rotate(0deg); }
+        100% { transform: translateY(120vh) rotate(360deg); }
+    }
+
+    /* 🎁 Bouton surprise */
+    #surpriseBtn {
+        padding: 12px 25px;
+        font-size: 22px;
+        background: #ffb7d5;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 0 5px #ff4da6;
+        box-shadow: 0 0 10px #ff4da6;
+        transition: 0.2s;
+    }
+
+    #surpriseBtn:hover {
+        transform: scale(1.1);
+        background: #ff8cbc;
+    }
+
+    /* 📱 Message d'aide mobile */
+    #tapHelp {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.4);
+        padding: 10px 15px;
+        border-radius: 10px;
+        color: white;
+        font-size: 18px;
+        display: none;
     }
 </style>
 </head>
@@ -81,21 +123,67 @@
 
 <div id="player"></div>
 <div id="score">점수 : 0</div>
-<div id="message">축하해! 너는 정말 최고야!<br><br>잠시 후 이동합니다…</div>
+
+<div id="message">
+    축하해! 너는 이겼어!<br><br>
+    이제 진짜 서프라이즈를 보러 가자!!
+</div>
+
+<div id="tapHelp">📱 화면을 터치해서 점프!</div>
+
+<!-- 🎵 Musique d'ambiance -->
+<audio id="bgm" autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f4a3f2e3b.mp3?filename=sakura-lofi-ambient-110253.mp3" type="audio/mpeg">
+</audio>
 
 <script>
+    const bgm = document.getElementById("bgm");
+    bgm.volume = 0;
+
+    document.addEventListener("click", () => {
+        if (bgm.paused) bgm.play();
+
+        let v = 0;
+        const fade = setInterval(() => {
+            if (v >= 0.35) clearInterval(fade);
+            else {
+                v += 0.02;
+                bgm.volume = v;
+            }
+        }, 150);
+    });
+
     const player = document.getElementById("player");
     const scoreDisplay = document.getElementById("score");
     const message = document.getElementById("message");
+    const tapHelp = document.getElementById("tapHelp");
 
     let score = 0;
     let jumping = false;
     let gameOver = false;
 
-    // 점프
+    /* 🖥️ Saut clavier */
     document.addEventListener("keydown", () => {
         if (!jumping) jump();
     });
+
+    /* 📱 Saut tactile */
+    document.addEventListener("touchstart", (e) => {
+        e.preventDefault();  // empêche scroll/zoom
+        tapHelp.style.display = "none";
+        if (!jumping) jump();
+    }, { passive: false });
+
+    /* 🖱️ Saut clic */
+    document.addEventListener("mousedown", () => {
+        tapHelp.style.display = "none";
+        if (!jumping) jump();
+    });
+
+    /* 📱 Affiche l'aide mobile */
+    setTimeout(() => {
+        tapHelp.style.display = "block";
+    }, 1500);
 
     function jump() {
         jumping = true;
@@ -117,7 +205,6 @@
         }, 20);
     }
 
-    // 아이템 생성 (여러 높이)
     function spawnItem() {
         if (gameOver) return;
 
@@ -127,8 +214,7 @@
         let type = Math.random() < 0.7 ? "chicken" : "carrot";
         item.textContent = type === "chicken" ? "🍗" : "🥕";
 
-        // 높이 랜덤 (바닥, 중간, 위)
-        const heights = [20, 80, 140];
+        const heights = [20, 170, 200];
         item.style.bottom = heights[Math.floor(Math.random() * heights.length)] + "px";
 
         item.style.left = window.innerWidth + "px";
@@ -141,7 +227,6 @@
             const playerRect = player.getBoundingClientRect();
             const itemRect = item.getBoundingClientRect();
 
-            // 충돌
             if (
                 itemRect.left < playerRect.right &&
                 itemRect.right > playerRect.left &&
@@ -178,12 +263,32 @@
 
     function winGame() {
         gameOver = true;
+        message.innerHTML = `
+            축하해! 너는 이겼어!<br><br>
+            이제 진짜 서프라이즈를 보러 가자!!<br><br>
+            <button id="surpriseBtn">🎁 서프라이즈 보기</button>
+        `;
         message.style.display = "block";
 
         setTimeout(() => {
-            window.location.href = "page_messages.html";
-        }, 3000);
+            const btn = document.getElementById("surpriseBtn");
+            btn.addEventListener("click", () => {
+                window.location.href = "page_messages.html";
+            });
+        }, 100);
     }
+
+    function createSakura() {
+        const petal = document.createElement("div");
+        petal.classList.add("sakura");
+        petal.style.left = Math.random() * window.innerWidth + "px";
+        petal.style.animationDuration = (4 + Math.random() * 4) + "s";
+        document.body.appendChild(petal);
+
+        setTimeout(() => petal.remove(), 8000);
+    }
+
+    setInterval(createSakura, 300);
 </script>
 
 </body>
