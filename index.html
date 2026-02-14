@@ -12,8 +12,8 @@
         margin: 0;
         padding: 0;
         height: 100%;
-        overflow: hidden;        /* empêche le scroll */
-        touch-action: none;      /* empêche les gestes tactiles */
+        overflow: hidden;
+        touch-action: none;
     }
 
     body {
@@ -24,7 +24,6 @@
         font-family: sans-serif;
     }
 
-    /* 🐶 비숑 야쿠자 캐릭터 (이미지) */
     #player {
         position: absolute;
         bottom: 20px;
@@ -49,6 +48,17 @@
         color: #ffb7d5;
         font-weight: bold;
         text-shadow: 0 0 5px black;
+    }
+
+    /* ❤️ Barre de vie */
+    #life {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 28px;
+        color: #ff6b6b;
+        text-shadow: 0 0 5px black;
+        font-weight: bold;
     }
 
     #message {
@@ -85,7 +95,6 @@
         100% { transform: translateY(120vh) rotate(360deg); }
     }
 
-    /* 🎁 Bouton surprise */
     #surpriseBtn {
         padding: 12px 25px;
         font-size: 22px;
@@ -105,7 +114,6 @@
         background: #ff8cbc;
     }
 
-    /* 📱 Message d'aide mobile */
     #tapHelp {
         position: absolute;
         bottom: 20px;
@@ -123,6 +131,7 @@
 
 <div id="player"></div>
 <div id="score">점수 : 0</div>
+<div id="life">❤️❤️❤️</div>
 
 <div id="message">
     축하해! 너는 이겼어!<br><br>
@@ -131,7 +140,6 @@
 
 <div id="tapHelp">📱 화면을 터치해서 점프!</div>
 
-<!-- 🎵 Musique d'ambiance -->
 <audio id="bgm" autoplay loop>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f4a3f2e3b.mp3?filename=sakura-lofi-ambient-110253.mp3" type="audio/mpeg">
 </audio>
@@ -142,14 +150,10 @@
 
     document.addEventListener("click", () => {
         if (bgm.paused) bgm.play();
-
         let v = 0;
         const fade = setInterval(() => {
             if (v >= 0.35) clearInterval(fade);
-            else {
-                v += 0.02;
-                bgm.volume = v;
-            }
+            else { v += 0.02; bgm.volume = v; }
         }, 150);
     });
 
@@ -161,29 +165,30 @@
     let score = 0;
     let jumping = false;
     let gameOver = false;
+    let life = 3;
 
-    /* 🖥️ Saut clavier */
-    document.addEventListener("keydown", () => {
-        if (!jumping) jump();
-    });
+    function updateLife() {
+        const lifeDisplay = document.getElementById("life");
+        if (life === 3) lifeDisplay.textContent = "❤️❤️❤️";
+        if (life === 2) lifeDisplay.textContent = "❤️❤️🖤";
+        if (life === 1) lifeDisplay.textContent = "❤️🖤🖤";
+        if (life === 0) lifeDisplay.textContent = "🖤🖤🖤";
+    }
 
-    /* 📱 Saut tactile */
+    document.addEventListener("keydown", () => { if (!jumping) jump(); });
+
     document.addEventListener("touchstart", (e) => {
-        e.preventDefault();  // empêche scroll/zoom
+        e.preventDefault();
         tapHelp.style.display = "none";
         if (!jumping) jump();
     }, { passive: false });
 
-    /* 🖱️ Saut clic */
     document.addEventListener("mousedown", () => {
         tapHelp.style.display = "none";
         if (!jumping) jump();
     });
 
-    /* 📱 Affiche l'aide mobile */
-    setTimeout(() => {
-        tapHelp.style.display = "block";
-    }, 1500);
+    setTimeout(() => { tapHelp.style.display = "block"; }, 1500);
 
     function jump() {
         jumping = true;
@@ -234,7 +239,9 @@
                 itemRect.top < playerRect.bottom
             ) {
                 if (type === "carrot") {
-                    endGame();
+                    life--;
+                    updateLife();
+                    if (life <= 0) endGame();
                 } else {
                     score++;
                     scoreDisplay.textContent = "점수 : " + score;
@@ -293,16 +300,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
