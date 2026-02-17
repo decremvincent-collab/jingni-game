@@ -198,13 +198,13 @@
                 let down = setInterval(() => {
                     if (height <= 0) {
                         clearInterval(down);
-                        jumping = true;
+                        jumping = false;
                     }
-                    height -= 10;
+                    height -= 5;
                     player.style.bottom = 20 + height + "px";
                 }, 20);
             }
-            height += 10;
+            height += 5;
             player.style.bottom = 20 + height + "px";
         }, 20);
     }
@@ -322,6 +322,7 @@
 
 </body>
 </html>
+
 
 
 
