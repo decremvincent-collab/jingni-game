@@ -198,7 +198,7 @@
                 let down = setInterval(() => {
                     if (height <= 0) {
                         clearInterval(down);
-                        jumping = false;
+                        jumping = true;
                     }
                     height -= 10;
                     player.style.bottom = 20 + height + "px";
@@ -322,5 +322,6 @@
 
 </body>
 </html>
+
 
 
