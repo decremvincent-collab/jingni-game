@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>치킨 런</title>
 
+<!-- 📱 Empêche zoom, scroll, resize mobile -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
@@ -93,6 +94,25 @@
         100% { transform: translateY(120vh) rotate(360deg); }
     }
 
+    #surpriseBtn {
+        padding: 12px 25px;
+        font-size: 22px;
+        background: #ffb7d5;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 0 5px #ff4da6;
+        box-shadow: 0 0 10px #ff4da6;
+        transition: 0.2s;
+    }
+
+    #surpriseBtn:hover {
+        transform: scale(1.1);
+        background: #ff8cbc;
+    }
+
     #tapHelp {
         position: absolute;
         bottom: 20px;
@@ -141,60 +161,11 @@
     const message = document.getElementById("message");
     const tapHelp = document.getElementById("tapHelp");
 
-    // position de départ
-    player.style.bottom = "20px";
-
     let score = 0;
+    let jumping = false;
     let gameOver = false;
     let life = 3;
 
-    // ⭐ Physique simple + double jump lent
-    let vy = 0;              // vitesse verticale
-    let gravity = -0.5;      // gravité (plus faible = plus lent)
-    let jumpPower = 14;      // puissance du saut (plus faible = moins “violent”)
-    let jumps = 0;           // nombre de sauts effectués
-    let maxJumps = 2;        // double jump
-
-    function jump() {
-        if (gameOver) return;
-        if (jumps < maxJumps) {
-            vy = jumpPower;
-            jumps++;
-        }
-    }
-
-    function updatePlayer() {
-        vy += gravity;
-
-        let currentBottom = parseInt(player.style.bottom);
-        let newBottom = currentBottom + vy;
-
-        // sol
-        if (newBottom <= 20) {
-            newBottom = 20;
-            vy = 0;
-            jumps = 0; // reset double jump quand on touche le sol
-        }
-
-        player.style.bottom = newBottom + "px";
-
-        requestAnimationFrame(updatePlayer);
-    }
-
-    updatePlayer();
-
-    // ⭐ Contrôles
-    document.addEventListener("keydown", () => jump());
-    document.addEventListener("mousedown", () => jump());
-    document.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        tapHelp.style.display = "none";
-        jump();
-    }, { passive: false });
-
-    setTimeout(() => { tapHelp.style.display = "block"; }, 1500);
-
-    // ⭐ Vie
     function updateLife() {
         const lifeDisplay = document.getElementById("life");
         if (life === 3) lifeDisplay.textContent = "❤️❤️❤️";
@@ -203,13 +174,48 @@
         if (life === 0) lifeDisplay.textContent = "🖤🖤🖤";
     }
 
-    // ⭐ Items
+    document.addEventListener("keydown", () => { if (!jumping) jump(); });
+
+    document.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        tapHelp.style.display = "none";
+        if (!jumping) jump();
+    }, { passive: false });
+
+    document.addEventListener("mousedown", () => {
+        tapHelp.style.display = "none";
+        if (!jumping) jump();
+    });
+
+    setTimeout(() => { tapHelp.style.display = "block"; }, 1500);
+
+    function jump() {
+        jumping = true;
+        let height = 0;
+        let up = setInterval(() => {
+            if (height >= 140) {
+                clearInterval(up);
+                let down = setInterval(() => {
+                    if (height <= 0) {
+                        clearInterval(down);
+                        jumping = false;
+                    }
+                    height -= 5;
+                    player.style.bottom = 20 + height + "px";
+                }, 20);
+            }
+            height += 5;
+            player.style.bottom = 20 + height + "px";
+        }, 20);
+    }
+
     function spawnItem() {
         if (gameOver) return;
 
         const item = document.createElement("div");
         item.classList.add("item");
 
+        /* --- AJOUT TOILETTE (10% de chance) --- */
         let r = Math.random();
         let type =
             r < 0.10 ? "toilet" :
@@ -240,6 +246,8 @@
                 itemRect.bottom > playerRect.top &&
                 itemRect.top < playerRect.bottom
             ) {
+
+                /* --- LOGIQUE DES ITEMS --- */
 
                 if (type === "carrot") {
                     life--;
@@ -314,3 +322,7 @@
 
 </body>
 </html>
+
+
+
+
