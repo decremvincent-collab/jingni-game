@@ -143,39 +143,50 @@
 
     let score = 0;
     let jumping = false;
+    let jumpCount = 0;   // ⭐ compteur de double jump
     let gameOver = false;
     let life = 3;
 
-    /* ⭐ REMISE DU SAUT ORIGINAL */
+    /* ⭐ SAUT ORIGINAL + DOUBLE JUMP */
     function jump() {
-        if (jumping) return;
+        if (jumpCount >= 2) return; // max 2 sauts
+
+        jumpCount++;
         jumping = true;
 
+        let startBottom = parseInt(player.style.bottom);
         let height = 0;
+
         let up = setInterval(() => {
             if (height >= 140) {
                 clearInterval(up);
+
                 let down = setInterval(() => {
                     if (height <= 0) {
                         clearInterval(down);
+
+                        // ⭐ si on touche le sol → reset double jump
+                        if (jumpCount >= 2) jumpCount = 0;
+
                         jumping = false;
                     }
                     height -= 5;
-                    player.style.bottom = 20 + height + "px";
+                    player.style.bottom = startBottom + height + "px";
                 }, 20);
             }
+
             height += 5;
-            player.style.bottom = 20 + height + "px";
+            player.style.bottom = startBottom + height + "px";
         }, 20);
     }
 
     /* ⭐ Contrôles */
-    document.addEventListener("keydown", () => { if (!jumping) jump(); });
-    document.addEventListener("mousedown", () => { if (!jumping) jump(); });
+    document.addEventListener("keydown", () => jump());
+    document.addEventListener("mousedown", () => jump());
     document.addEventListener("touchstart", (e) => {
         e.preventDefault();
         tapHelp.style.display = "none";
-        if (!jumping) jump();
+        jump();
     }, { passive: false });
 
     setTimeout(() => { tapHelp.style.display = "block"; }, 1500);
