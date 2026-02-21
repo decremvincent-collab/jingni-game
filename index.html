@@ -137,6 +137,8 @@
     });
 
     const player = document.getElementById("player");
+    player.style.bottom = "20px"; // ⭐ FIX essentiel
+
     const scoreDisplay = document.getElementById("score");
     const message = document.getElementById("message");
     const tapHelp = document.getElementById("tapHelp");
@@ -146,11 +148,11 @@
     let life = 3;
 
     /* ⭐ Nouveau système de saut fluide + double jump */
-    let vy = 0;              // vitesse verticale
-    let gravity = -1.2;      // gravité
-    let jumpPower = 22;      // puissance du saut
-    let jumps = 0;           // nombre de sauts effectués
-    let maxJumps = 2;        // double jump
+    let vy = 0;
+    let gravity = -1.2;
+    let jumpPower = 22;
+    let jumps = 0;
+    let maxJumps = 2;
 
     function jump() {
         if (jumps < maxJumps) {
@@ -164,11 +166,10 @@
 
         let newBottom = parseInt(player.style.bottom) + vy;
 
-        // sol
         if (newBottom <= 20) {
             newBottom = 20;
             vy = 0;
-            jumps = 0; // reset double jump
+            jumps = 0;
         }
 
         player.style.bottom = newBottom + "px";
