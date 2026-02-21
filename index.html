@@ -141,46 +141,49 @@
     const message = document.getElementById("message");
     const tapHelp = document.getElementById("tapHelp");
 
+    // position de départ
+    player.style.bottom = "20px";
+
     let score = 0;
-    let jumping = false;
-    let jumpCount = 0;   // ⭐ compteur de double jump
     let gameOver = false;
     let life = 3;
 
-    /* ⭐ SAUT ORIGINAL + DOUBLE JUMP */
+    // ⭐ Physique simple + double jump lent
+    let vy = 0;              // vitesse verticale
+    let gravity = -0.5;      // gravité (plus faible = plus lent)
+    let jumpPower = 14;      // puissance du saut (plus faible = moins “violent”)
+    let jumps = 0;           // nombre de sauts effectués
+    let maxJumps = 2;        // double jump
+
     function jump() {
-        if (jumpCount >= 2) return; // max 2 sauts
-
-        jumpCount++;
-        jumping = true;
-
-        let startBottom = parseInt(player.style.bottom);
-        let height = 0;
-
-        let up = setInterval(() => {
-            if (height >= 140) {
-                clearInterval(up);
-
-                let down = setInterval(() => {
-                    if (height <= 0) {
-                        clearInterval(down);
-
-                        // ⭐ si on touche le sol → reset double jump
-                        if (jumpCount >= 2) jumpCount = 0;
-
-                        jumping = false;
-                    }
-                    height -= 5;
-                    player.style.bottom = startBottom + height + "px";
-                }, 20);
-            }
-
-            height += 5;
-            player.style.bottom = startBottom + height + "px";
-        }, 20);
+        if (gameOver) return;
+        if (jumps < maxJumps) {
+            vy = jumpPower;
+            jumps++;
+        }
     }
 
-    /* ⭐ Contrôles */
+    function updatePlayer() {
+        vy += gravity;
+
+        let currentBottom = parseInt(player.style.bottom);
+        let newBottom = currentBottom + vy;
+
+        // sol
+        if (newBottom <= 20) {
+            newBottom = 20;
+            vy = 0;
+            jumps = 0; // reset double jump quand on touche le sol
+        }
+
+        player.style.bottom = newBottom + "px";
+
+        requestAnimationFrame(updatePlayer);
+    }
+
+    updatePlayer();
+
+    // ⭐ Contrôles
     document.addEventListener("keydown", () => jump());
     document.addEventListener("mousedown", () => jump());
     document.addEventListener("touchstart", (e) => {
@@ -191,7 +194,7 @@
 
     setTimeout(() => { tapHelp.style.display = "block"; }, 1500);
 
-    /* ⭐ Items */
+    // ⭐ Vie
     function updateLife() {
         const lifeDisplay = document.getElementById("life");
         if (life === 3) lifeDisplay.textContent = "❤️❤️❤️";
@@ -200,6 +203,7 @@
         if (life === 0) lifeDisplay.textContent = "🖤🖤🖤";
     }
 
+    // ⭐ Items
     function spawnItem() {
         if (gameOver) return;
 
