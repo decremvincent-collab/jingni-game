@@ -137,55 +137,45 @@
     });
 
     const player = document.getElementById("player");
-    player.style.bottom = "20px"; // ⭐ FIX essentiel
-
     const scoreDisplay = document.getElementById("score");
     const message = document.getElementById("message");
     const tapHelp = document.getElementById("tapHelp");
 
     let score = 0;
+    let jumping = false;
     let gameOver = false;
     let life = 3;
 
-    /* ⭐ Nouveau système de saut fluide + double jump */
-    let vy = 0;
-    let gravity = -1.2;
-    let jumpPower = 22;
-    let jumps = 0;
-    let maxJumps = 2;
-
+    /* ⭐ REMISE DU SAUT ORIGINAL */
     function jump() {
-        if (jumps < maxJumps) {
-            vy = jumpPower;
-            jumps++;
-        }
+        if (jumping) return;
+        jumping = true;
+
+        let height = 0;
+        let up = setInterval(() => {
+            if (height >= 140) {
+                clearInterval(up);
+                let down = setInterval(() => {
+                    if (height <= 0) {
+                        clearInterval(down);
+                        jumping = false;
+                    }
+                    height -= 5;
+                    player.style.bottom = 20 + height + "px";
+                }, 20);
+            }
+            height += 5;
+            player.style.bottom = 20 + height + "px";
+        }, 20);
     }
-
-    function updatePlayer() {
-        vy += gravity;
-
-        let newBottom = parseInt(player.style.bottom) + vy;
-
-        if (newBottom <= 20) {
-            newBottom = 20;
-            vy = 0;
-            jumps = 0;
-        }
-
-        player.style.bottom = newBottom + "px";
-
-        requestAnimationFrame(updatePlayer);
-    }
-
-    updatePlayer();
 
     /* ⭐ Contrôles */
-    document.addEventListener("keydown", () => jump());
-    document.addEventListener("mousedown", () => jump());
+    document.addEventListener("keydown", () => { if (!jumping) jump(); });
+    document.addEventListener("mousedown", () => { if (!jumping) jump(); });
     document.addEventListener("touchstart", (e) => {
         e.preventDefault();
         tapHelp.style.display = "none";
-        jump();
+        if (!jumping) jump();
     }, { passive: false });
 
     setTimeout(() => { tapHelp.style.display = "block"; }, 1500);
