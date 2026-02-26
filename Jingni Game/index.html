@@ -12,8 +12,8 @@
         margin: 0;
         padding: 0;
         height: 100%;
-        overflow: hidden;        /* empêche le scroll */
-        touch-action: none;      /* empêche les gestes tactiles */
+        overflow: hidden;
+        touch-action: none;
     }
 
     body {
@@ -24,13 +24,12 @@
         font-family: sans-serif;
     }
 
-    /* 🐶 비숑 야쿠자 캐릭터 (이미지) */
     #player {
         position: absolute;
         bottom: 20px;
         left: 50px;
-        width: 100px;
-        height: 100px;
+        width: 300px;
+        height: 300px;
         background-image: url('https://scontent.xx.fbcdn.net/v/t1.15752-9/627764165_1645091116931275_235186095692944776_n.png?_nc_cat=108&ccb=1-7&_nc_sid=9f807c&_nc_ohc=iThv7aZGQXsQ7kNvwFFXx6M&_nc_oc=AdkBiwgmNEyrHwQ4EZxB5M3bhN4bt4Ed5ov9JgCRVfCojSw26KGcbPUXCSjvnC5BfpMzf9mcAaJWShurdNe4Juc8&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.xx&oh=03_Q7cD4gEQMLVguddvtyfZ9xISj5zV-T-cH06IUWO1aIiRkp3lgw&oe=69B7EC9A');
         background-size: cover;
         background-position: center;
@@ -49,6 +48,16 @@
         color: #ffb7d5;
         font-weight: bold;
         text-shadow: 0 0 5px black;
+    }
+
+    #life {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 28px;
+        color: #ff6b6b;
+        text-shadow: 0 0 5px black;
+        font-weight: bold;
     }
 
     #message {
@@ -85,7 +94,6 @@
         100% { transform: translateY(120vh) rotate(360deg); }
     }
 
-    /* 🎁 Bouton surprise */
     #surpriseBtn {
         padding: 12px 25px;
         font-size: 22px;
@@ -105,7 +113,6 @@
         background: #ff8cbc;
     }
 
-    /* 📱 Message d'aide mobile */
     #tapHelp {
         position: absolute;
         bottom: 20px;
@@ -123,6 +130,7 @@
 
 <div id="player"></div>
 <div id="score">점수 : 0</div>
+<div id="life">❤️❤️❤️</div>
 
 <div id="message">
     축하해! 너는 이겼어!<br><br>
@@ -131,7 +139,6 @@
 
 <div id="tapHelp">📱 화면을 터치해서 점프!</div>
 
-<!-- 🎵 Musique d'ambiance -->
 <audio id="bgm" autoplay loop>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f4a3f2e3b.mp3?filename=sakura-lofi-ambient-110253.mp3" type="audio/mpeg">
 </audio>
@@ -142,14 +149,10 @@
 
     document.addEventListener("click", () => {
         if (bgm.paused) bgm.play();
-
         let v = 0;
         const fade = setInterval(() => {
             if (v >= 0.35) clearInterval(fade);
-            else {
-                v += 0.02;
-                bgm.volume = v;
-            }
+            else { v += 0.02; bgm.volume = v; }
         }, 150);
     });
 
@@ -161,29 +164,30 @@
     let score = 0;
     let jumping = false;
     let gameOver = false;
+    let life = 3;
 
-    /* 🖥️ Saut clavier */
-    document.addEventListener("keydown", () => {
-        if (!jumping) jump();
-    });
+    function updateLife() {
+        const lifeDisplay = document.getElementById("life");
+        if (life === 3) lifeDisplay.textContent = "❤️❤️❤️";
+        if (life === 2) lifeDisplay.textContent = "❤️❤️🖤";
+        if (life === 1) lifeDisplay.textContent = "❤️🖤🖤";
+        if (life === 0) lifeDisplay.textContent = "🖤🖤🖤";
+    }
 
-    /* 📱 Saut tactile */
+    document.addEventListener("keydown", () => { if (!jumping) jump(); });
+
     document.addEventListener("touchstart", (e) => {
-        e.preventDefault();  // empêche scroll/zoom
+        e.preventDefault();
         tapHelp.style.display = "none";
         if (!jumping) jump();
     }, { passive: false });
 
-    /* 🖱️ Saut clic */
     document.addEventListener("mousedown", () => {
         tapHelp.style.display = "none";
         if (!jumping) jump();
     });
 
-    /* 📱 Affiche l'aide mobile */
-    setTimeout(() => {
-        tapHelp.style.display = "block";
-    }, 1500);
+    setTimeout(() => { tapHelp.style.display = "block"; }, 1500);
 
     function jump() {
         jumping = true;
@@ -211,10 +215,19 @@
         const item = document.createElement("div");
         item.classList.add("item");
 
-        let type = Math.random() < 0.7 ? "chicken" : "carrot";
-        item.textContent = type === "chicken" ? "🍗" : "🥕";
+        /* --- AJOUT TOILETTE (10% de chance) --- */
+        let r = Math.random();
+        let type =
+            r < 0.10 ? "toilet" :
+            r < 0.70 ? "chicken" :
+                       "carrot";
 
-        const heights = [20, 170, 200];
+        item.textContent =
+            type === "chicken" ? "🍗" :
+            type === "carrot"  ? "🥕" :
+                                 "🚽";
+
+        const heights = [1, 370, 400];
         item.style.bottom = heights[Math.floor(Math.random() * heights.length)] + "px";
 
         item.style.left = window.innerWidth + "px";
@@ -233,13 +246,29 @@
                 itemRect.bottom > playerRect.top &&
                 itemRect.top < playerRect.bottom
             ) {
+
+                /* --- LOGIQUE DES ITEMS --- */
+
                 if (type === "carrot") {
-                    endGame();
-                } else {
+                    life--;
+                    updateLife();
+                    if (life <= 0) endGame();
+                }
+
+                if (type === "chicken") {
                     score++;
                     scoreDisplay.textContent = "점수 : " + score;
                     if (score >= 30) winGame();
                 }
+
+                if (type === "toilet") {
+                    if (life < 3) life++;
+                    updateLife();
+                    message.innerHTML = "🚽 당근은 소화가 잘 안 돼!";
+                    message.style.display = "block";
+                    setTimeout(() => message.style.display = "none", 1500);
+                }
+
                 item.remove();
                 clearInterval(move);
             }
@@ -293,3 +322,6 @@
 
 </body>
 </html>
+
+
+
