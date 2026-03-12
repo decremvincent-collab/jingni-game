@@ -94,10 +94,9 @@
         100% { transform: translateY(120vh) rotate(360deg); }
     }
 
-    #surpriseBtn {
+    #surpriseBtn, #retryBtn {
         padding: 12px 25px;
         font-size: 22px;
-        background: #ffb7d5;
         border: none;
         border-radius: 12px;
         cursor: pointer;
@@ -108,10 +107,11 @@
         transition: 0.2s;
     }
 
-    #surpriseBtn:hover {
-        transform: scale(1.1);
-        background: #ff8cbc;
-    }
+    #surpriseBtn { background: #ffb7d5; }
+    #surpriseBtn:hover { transform: scale(1.1); background: #ff8cbc; }
+
+    #retryBtn { background: #ff6b6b; }
+    #retryBtn:hover { transform: scale(1.1); background: #ff4d4d; }
 
     #tapHelp {
         position: absolute;
@@ -132,10 +132,7 @@
 <div id="score">점수 : 0</div>
 <div id="life">❤️❤️❤️</div>
 
-<div id="message">
-    축하해! 너는 이겼어!<br><br>
-    이제 진짜 서프라이즈를 보러 가자!!
-</div>
+<div id="message"></div>
 
 <div id="tapHelp">📱 화면을 터치해서 점프!</div>
 
@@ -175,17 +172,8 @@
     }
 
     document.addEventListener("keydown", () => { if (!jumping) jump(); });
-
-    document.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        tapHelp.style.display = "none";
-        if (!jumping) jump();
-    }, { passive: false });
-
-    document.addEventListener("mousedown", () => {
-        tapHelp.style.display = "none";
-        if (!jumping) jump();
-    });
+    document.addEventListener("touchstart", (e) => { e.preventDefault(); tapHelp.style.display = "none"; if (!jumping) jump(); }, { passive: false });
+    document.addEventListener("mousedown", () => { tapHelp.style.display = "none"; if (!jumping) jump(); });
 
     setTimeout(() => { tapHelp.style.display = "block"; }, 1500);
 
@@ -215,7 +203,6 @@
         const item = document.createElement("div");
         item.classList.add("item");
 
-        /* --- AJOUT TOILETTE (10% de chance) --- */
         let r = Math.random();
         let type =
             r < 0.10 ? "toilet" :
@@ -246,8 +233,6 @@
                 itemRect.bottom > playerRect.top &&
                 itemRect.top < playerRect.bottom
             ) {
-
-                /* --- LOGIQUE DES ITEMS --- */
 
                 if (type === "carrot") {
                     life--;
@@ -284,10 +269,20 @@
 
     spawnItem();
 
+    /* ⭐⭐ BOUTON RETRY INTÉGRÉ ICI ⭐⭐ */
     function endGame() {
         gameOver = true;
-        message.innerHTML = "🥕 게임 오버!<br>다시 도전해봐!";
+        message.innerHTML = `
+            🥕 게임 오버!<br>다시 도전해봐!<br><br>
+            <button id="retryBtn">🔄 다시 시작하기</button>
+        `;
         message.style.display = "block";
+
+        setTimeout(() => {
+            document.getElementById("retryBtn").addEventListener("click", () => {
+                location.reload();
+            });
+        }, 100);
     }
 
     function winGame() {
@@ -322,6 +317,3 @@
 
 </body>
 </html>
-
-
-
